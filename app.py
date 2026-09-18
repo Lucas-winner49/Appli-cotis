@@ -32,7 +32,15 @@ hide_streamlit_style = """
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-st.set_page_config(page_title="CESTOM - B-Cotis", layout="wide", initial_sidebar_state="collapsed")
+APP_DIR = os.path.dirname(__file__)
+APP_LOGO_PATH = os.path.join(APP_DIR, "m.jpg")
+
+st.set_page_config(
+    page_title="CESTOM - M-Cotis",
+    page_icon=APP_LOGO_PATH,
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # --- GESTION DU THÈME (CLAIR / SOMBRE) ---
 if 'theme' not in st.session_state:
@@ -41,17 +49,17 @@ if 'theme' not in st.session_state:
 # En-tête commun à toutes les vues
 col_app, col_controls = st.columns([10, 1])
 with col_app:
-    logo_header = os.path.join(os.path.dirname(__file__), "c.jpg")
+    logo_header = APP_LOGO_PATH
     if os.path.exists(logo_header):
         with open(logo_header, "rb") as logo_file:
             logo_header_data = base64.b64encode(logo_file.read()).decode()
         st.markdown(
-            f"<div class='app-brand'>B-Cotis</div>"
+            f"<div class='app-brand'>M-Cotis</div>"
             f"<img class='header-logo' src='data:image/jpeg;base64,{logo_header_data}' alt='CESTOM'>",
             unsafe_allow_html=True,
         )
     else:
-        st.markdown("<div class='app-brand'>B-Cotis</div>", unsafe_allow_html=True)
+        st.markdown("<div class='app-brand'>M-Cotis</div>", unsafe_allow_html=True)
 with col_controls:
     with st.container(key="header_controls"):
         if st.session_state.get('logged_in', False):
@@ -75,6 +83,7 @@ def set_background(image_file, theme):
         drawer_bg = "#0b0f14"
         text_color = "white"
         border_color = "rgba(255, 255, 255, 0.95)"
+        separator_color = "rgba(255, 255, 255, 0.55)"
         shadow = "0 10px 40px rgba(0, 0, 0, 0.5)"
         theme_icon_color = "white"
     else:
@@ -83,6 +92,7 @@ def set_background(image_file, theme):
         drawer_bg = "#ffffff"
         text_color = "#1e272e"
         border_color = "rgba(0, 0, 0, 0.95)"
+        separator_color = "#8b5e3c"
         shadow = "0 10px 40px rgba(0, 0, 0, 0.1)"
         theme_icon_color = "#111111"
 
@@ -119,6 +129,7 @@ def set_background(image_file, theme):
         max-width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box;
+        padding-top: 1rem !important;
         padding-left: clamp(1rem, 3vw, 2rem);
         padding-right: clamp(1rem, 3vw, 2rem);
     }}
@@ -213,10 +224,31 @@ def set_background(image_file, theme):
 
     .st-key-header_menu > [data-testid="stButton"] > button,
     .st-key-header_menu > [data-testid="stButton"] > button *,
+    .st-key-header_menu > [data-testid="stButton"] > button svg,
+    .st-key-header_menu > [data-testid="stButton"] > button svg *,
+    .st-key-header_menu > [data-testid="stButton"] > button svg path,
+    .st-key-header_menu > [data-testid="stButton"] > button svg line,
+    .st-key-header_menu > [data-testid="stButton"] > button svg rect,
+    .st-key-header_menu > [data-testid="stButton"] > button svg polyline,
+    .st-key-header_menu > [data-testid="stButton"] > button svg polygon {{
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    fill: #111111 !important;
+    stroke: #111111 !important;
+    background: #d9d9d9 !important;
+    }}
+
     .st-key-header_menu_close_button > [data-testid="stButton"] > button,
-    .st-key-header_menu_close_button > [data-testid="stButton"] > button * {{
-        color: #ffffff !important;
-        background: #111111 !important;
+    .st-key-header_menu_close_button > [data-testid="stButton"] > button *,
+    .st-key-header_menu_close_button > [data-testid="stButton"] > button svg,
+    .st-key-header_menu_close_button > [data-testid="stButton"] > button svg *,
+    .st-key-header_menu_close_button > [data-testid="stButton"] > button svg path,
+    .st-key-header_menu_close_button > [data-testid="stButton"] > button svg line {{
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
+        fill: #111111 !important;
+        stroke: #111111 !important;
+        background: #d9d9d9 !important;
     }}
 
     .header-menu-panel {{
@@ -310,6 +342,13 @@ def set_background(image_file, theme):
 
     .st-key-header_menu_close_button > button * {{
         color: #ffffff !important;
+    }}
+
+    .cotisation-separator {{
+        border: 0 !important;
+        border-top: 2px solid {separator_color} !important;
+        opacity: 1 !important;
+        margin: 1rem 0 !important;
     }}
 
     @keyframes header-drawer-in {{
@@ -584,8 +623,13 @@ def set_background(image_file, theme):
             border-color: #111111 !important;
         }}
 
+        .st-key-header_menu_close_button > button,
         .st-key-header_menu_close_button > button * {{
-            color: white !important;
+            color: #111111 !important;
+            -webkit-text-fill-color: #111111 !important;
+            fill: #111111 !important;
+            stroke: #111111 !important;
+            background: #d9d9d9 !important;
         }}
         .st-key-header_controls {{
             width: 100px !important;
@@ -984,7 +1028,7 @@ def generer_pdf_bulletin_utilisateur(details, cotisations, annee, objectifs):
     ]
     table.setStyle(TableStyle(table_style))
 
-    logo_path = os.path.join(os.path.dirname(__file__), "c.jpg")
+    logo_path = APP_LOGO_PATH
 
     def dessiner_entete(canvas, _document):
         canvas.saveState()
@@ -1767,7 +1811,7 @@ else:
         objectif_total_effectif = float(objectif_total or 0)
         reste_a_payer = max(objectif_total_effectif - total_cotise, 0)
         
-        st.markdown("<hr style='border-color: rgba(150,150,150,0.2);'>", unsafe_allow_html=True)
+        st.markdown("<hr class='cotisation-separator'>", unsafe_allow_html=True)
         
         for periode in periodes:
             c1, c2 = st.columns([2.4, 1.6])
@@ -1794,7 +1838,7 @@ else:
                         "</div>",
                         unsafe_allow_html=True,
                     )
-            st.divider()
+            st.markdown("<hr class='cotisation-separator'>", unsafe_allow_html=True)
 
         st.markdown("### Résumé des cotisations")
         montant_annuel_affiche = "" if total_annuel <= 0 else f"{total_annuel:g}"
