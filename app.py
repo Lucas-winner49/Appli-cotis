@@ -11,6 +11,27 @@ import io
 import streamlit.components.v1 as components
 from PIL import Image, UnidentifiedImageError
 
+
+import streamlit as st
+
+# Masquer la barre supérieure, le logo Streamlit et le pied de page
+hide_streamlit_style = """
+    <style>
+    /* Masquer la barre du haut (Share, GitHub, menu) */
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    /* Masquer le pied de page 'Made with Streamlit' */
+    footer {
+        visibility: hidden !important;
+    }
+    /* Masquer la décoration de marge */
+    [data-testid="stDecoration"] {
+        display: none !important;
+    }
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.set_page_config(page_title="CESTOM - B-Cotis", layout="wide", initial_sidebar_state="collapsed")
 
 # --- GESTION DU THÈME (CLAIR / SOMBRE) ---
